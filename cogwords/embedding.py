@@ -6,13 +6,13 @@ import numpy as np
 import mygrad as mg
 
 # load COCO metadata
-filename = r"C:\BWSI\Week3\captions_train2014.json"
+'''filename = r"C:/Users/HyoJP/Desktop/BWSI/week3/capstone/data/captions_train2014.json"
 with Path(filename).open() as f:
     coco_data = json.load(f)
 
 from gensim.models import KeyedVectors
-filename = r"C:\BWSI\Week3\glove.6B.200d.txt.w2v"
-glove = KeyedVectors.load_word2vec_format(filename, binary=False)
+filename = r"C:/Users/HyoJP/Desktop/BWSI/week3/capstone/data/glove.6B.200d.txt.w2v"
+glove = KeyedVectors.load_word2vec_format(filename, binary=False)'''
 
 import re, string
 
