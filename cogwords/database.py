@@ -1,11 +1,12 @@
 import numpy as np
 import mygrad
+import pickle
 
 class database:
-    def __init__(self):
+    def __init__(self, file_path):
         from pathlib import Path
         import json
-        filename = "C:/Users/HyoJP/Desktop/BWSI/week3/capstone/data/captions_train2014.json"
+        filename = file_path
         with Path(filename).open() as f:
             coco_data = json.load(f)
         self.coco_data = coco_data
@@ -55,13 +56,20 @@ class database:
     def get_image_ID(self, caption_ID):
         return self.cid_to_iid[caption_ID]
 
-    def store_word_embeddings(self, word_embeddings):
+    def load_data(self, word_embeddings_path, glove_path):
         from collections import OrderedDict
-        self.word_embeddings = OrderedDict(word_embeddings) # {ID: word_embedding}
+        with open(word_embeddings_path, mode="rb") as iw:
+            img_weights = pickle.load(iw)
+        self.word_embeddings = OrderedDict(img_weights) # {ID: word_embedding}
         #self.reversed_word_embeddings = {key:value for value, key in word_embeddings.items()} # {word_embedding: ID}
+        with open(glove_path, 'rb') as l:
+            self.glove = pickle.load(l)
+
 
     @staticmethod
     def cos_sim(x1, x2):
+        x1 = x1.flatten()
+        x2 = x2.flatten()
         return np.matmul(x1, x2) / (np.linalg.norm(x1) * np.linalg.norm(x2))
 
     # query by cosine similarities
@@ -88,4 +96,4 @@ class database:
     def display_image(self, image_ID):
         from image import download_image
 
-        display(download_image(self.get_url(image_ID)))
+        return download_image(self.get_url(image_ID))
