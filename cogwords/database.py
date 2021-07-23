@@ -1,10 +1,10 @@
 import numpy as np
 
 class database:
-    def __init__(self):
+    def __init__(self, file_path):
         from pathlib import Path
         import json
-        filename = "C:/Users/HyoJP/Desktop/BWSI/week3/capstone/data/captions_train2014.json"
+        filename = file_path
         with Path(filename).open() as f:
             coco_data = json.load(f)
         self.coco_data = coco_data
