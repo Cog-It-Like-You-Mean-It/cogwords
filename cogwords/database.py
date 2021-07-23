@@ -1,10 +1,11 @@
 import numpy as np
+import mygrad
 
 class database:
-    def __init__(self, file_path):
+    def __init__(self):
         from pathlib import Path
         import json
-        filename = file_path
+        filename = "C:/Users/HyoJP/Desktop/BWSI/week3/capstone/data/captions_train2014.json"
         with Path(filename).open() as f:
             coco_data = json.load(f)
         self.coco_data = coco_data
@@ -55,34 +56,36 @@ class database:
         return self.cid_to_iid[caption_ID]
 
     def store_word_embeddings(self, word_embeddings):
-        self.word_embeddings = word_embeddings # {ID: word_embedding}
-        self.reversed_word_embeddings = {key:value for value, key in word_embeddings} # {word_embedding: ID}
+        from collections import OrderedDict
+        self.word_embeddings = OrderedDict(word_embeddings) # {ID: word_embedding}
+        #self.reversed_word_embeddings = {key:value for value, key in word_embeddings.items()} # {word_embedding: ID}
 
     @staticmethod
     def cos_sim(x1, x2):
-        return np.dot(x1, x2) / (np.linalg.norm(x1) * np.linalg.norm(x2))
+        return np.matmul(x1, x2) / (np.linalg.norm(x1) * np.linalg.norm(x2))
 
     # query by cosine similarities
     def query(self, embedding, k=4):
         # calculate cosine similarities
         cos_sims = []
         for w in self.word_embeddings.values():
-            cos_sims.append(self.cos_sim(embedding, w))
-
-        cos_sims = np.concatenate(cos_sims, axis=0)
+            cos_sims.append(self.cos_sim(embedding, w).item())
+        #print(cos_sims)
+        cos_sims = np.array(cos_sims, dtype=np.float32)
 
         # get the top k rows
-        top_k = cos_sims.argsort()[0][-k:]
+        top_k = cos_sims.argsort()[-k:]
+        #print(top_k)
         IDs = []
 
+        w_embeds_ids = list(self.word_embeddings) # allows searching IDs by index
         for img in top_k:
-            IDs.append(self.reversed_word_embeddings[img])
+            IDs.append(w_embeds_ids[img])
         # # get the top k labels
-        # top_k_labels = [labels[i] for i in top_k]
         
         return IDs
     
     def display_image(self, image_ID):
         from image import download_image
 
-        download_image(self.get_url(image_ID)).show()
+        display(download_image(self.get_url(image_ID)))
